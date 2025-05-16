@@ -119,5 +119,136 @@ Together, these additions allow the model to simulate rare but impactful market 
 
 ---
 
+### PSEUDOCODE
 
+Comments are given by `#A Hashtag (this is a comment)`
 
+```
+IMPORT dependencies (yfinance, numpy, math)
+
+#Function
+DECLARE function data_scrape(stock, time)
+
+  CONVERT stock to ticker object using  yf.Ticker()
+  FETCH data from stock.history() for a period of 30 days
+  FETCH jump_data from stock.history() for a period of 1 year
+
+  #Obtaining prices when the market closes each day
+  FETCH prices from data["Close"]
+  FETCH jump_prices from jump_data["Close"]
+
+  #Computing returns
+  COMPUTE returns as np.log(prices / prices.shift(1)).dropna()
+  COMPUTE jump_returns as jump_prices.pct_change().dropna()
+
+  #Computing mean and volatility
+  COMPUTE mean as returns.mean() and volatility as returns.std()
+  COMPUTE annual_mean as mean * 252 and annual_volatility as volatility * np.sqrt(252)
+
+  #Defining threshold
+  COMPUTE threshold as 3 * jump_returns.std()
+  COMPUTE jumps as jump_returns[abs(jump_returns) > threshold].tolist()
+
+  #Computing k
+  DECLARE ksum as 0
+  FOR each i in jumps
+    INCREMENT ksum by math.log(1+i)
+  IF length(jumps) is 0
+    DECLARE k as 0
+  ELSE
+    DECLARE k as ksum / length(jumps)
+
+  #Computing jump volatility
+  DECLARE jump_array as empty array
+  FOR each i in jumps
+    APPEND math.log(1+i) to jump_array
+  IF length(jump_array) is 0
+    DECLARE sig_j as 0
+  ELSE
+    COMPUTE sig_j as np.std(jump_array, ddof=1)
+
+  COMPUTE lambda_ as length(jumps) / (252 / time)
+  RETURN (annual_mean, annual_volatility, k, sig_j, lambda_)
+
+#Obtaining data
+OBTAIN stock from the user
+OBTAIN simulations from the user
+
+FETCH data_today from yf.Ticker(stock).history(period="1d")
+FETCH price from data_today["Close"].iloc[-1]
+
+DECLARE time as 1
+OBTAIN mean, vol, k, sig_j, lam from data_scrape(stock, time)
+
+#Declaring variables
+DECLARE price_sum = 0
+COMPUTE time = time/252, base_wt = (time)^0.5, first_term = mean - vol^2 - lam*k
+
+#Simulation
+FOR i from 0 up to simulations
+  OBTAIN Z from np.random.normal(0,1)
+  COMPUTE Wt = Z * base_wt
+
+  OBTAIN N_t from np.random.poisson(lam*time)
+  DECLARE Ji_sum as 0
+
+  #Nested loop to find Summation of Ji
+  FOR j from 1 up to N_t+1
+    OBTAIN J from np.random.normal(math.log(1+k) - sig_j^2 / 2, sig_j)
+    INCREMENT Ji_sum by J
+
+  COMPUTE simulated_price = price * math.exp ((first_term * time) + (vol * Wt) + Ji_sum)
+  INCREMENT price_sum by simulated_price
+
+COMPUTE expected_price as price_sum / simulations
+
+DISPLAY expected_price
+```
+
+---
+
+### Disclaimer
+
+This Merton model implementation has an estimated accuracy above 50%, but it is not intended for making critical financial decisions. All simulations and predictions are for educational or illustrative purposes only. Any financial decisions you make based on this model are solely your responsibility. We disclaim any liability for losses or damages resulting from its use.
+
+---
+
+### Demo
+
+```shell
+#Test 1: AAPL with 10,000 simulations (Price in USD)
+
+Enter stock name: AAPL
+Enter the number of simulations: 10000
+=========================================================
+Stock chosen: AAPL
+Price of AAPL right now = 211.53500366210938
+Price of AAPL after 1 day is simulated to be = 212.28727411799156
+=========================================================
+```
+
+```shell
+#Test 2: NVDA with 10,000 simulations (Price in USD)
+
+Enter stock name: NVDA
+Enter the number of simulations: 10000
+=========================================================
+Stock chosen: NVDA
+Price of NVDA right now = 135.11500549316406
+Price of NVDA after 1 day is simulated to be = 136.72044994784767
+=========================================================
+```
+
+```shell
+#Test 3: RELIANCE (NIFTY) with 10,000 simulations (Price in INR)
+
+Enter stock name: RELIANCE.NS
+Enter the number of simulations: 10000
+=========================================================
+Stock chosen: RELIANCE.NS
+Price of RELIANCE.NS right now = 1456.4000244140625
+Price of RELIANCE.NS after 1 day is simulated to be = 1463.545954604547
+=========================================================
+```
+
+---
