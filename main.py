@@ -117,5 +117,5 @@ expected_price = price_sum/simulations
 print("=========================================================")
 print(f"Stock chosen: {stock}")
 print(f"Price of {stock} right now = {price}")
-print(f"Price after 1 day of {stock} is simulated to be = {expected_price}")
+print(f"Price of {stock} after 1 day is simulated to be = {expected_price}")
 print("=========================================================")
