@@ -49,7 +49,7 @@ $$
 Where all original GBM variables apply, and the jump-related terms are:
 
 - $$k$$ = Mean jump size (logarithmic average of all jumps)
-- $$\lambda$$ = Average number of jumps per year (jump intensity)
+- $$\lambda$$ = Average number of jumps per time period (jump intensity/frequency)
 - $$N(t)$$ = A Poisson process representing how many jumps occur up to time $$t$$
 - $$J_i$$ = The size of the $$i$$-th jump (typically modeled as log-normally distributed)
 
