@@ -23,7 +23,7 @@ Where:
 - $$e$$ = Euler’s number  
 - $$\mu$$ = Drift (average return)  
 - $$\sigma$$ = Volatility (price fluctuation)  
-- $$t$$ = Time in years (e.g., 1 day = 1/252)  
+- $$t$$ = Time in trading years (e.g., 1 day = 1/252, since there are 252 trading days in a year)  
 - $$W_t$$ = Wiener process, where $$W_t = Z \sqrt{t}$$, and $$Z \sim \mathcal{N}(0, 1)$$<br><br>
 
 **Limitations include:**
