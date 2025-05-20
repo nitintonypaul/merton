@@ -60,26 +60,24 @@ def data_scrape(stock, time):
         sig_j = np.std(jump_vol_array, ddof=1)
 
     #Computing Average jump frequency over given time
-    lambda_ = len(jumps)/(252/time)
+    lambda_ = len(jumps)/(1/time)
 
     #Returning obtained values
     return (annual_mean, annual_volatility, k, sig_j, lambda_)
 
 #Obtaining stock (Ticker Symbol) and number of simulations from user
 stock = input("Enter stock name: ")
+#simulations = int(input("Enter the number of simulations: "))
 
 #Obtaining today's stock priice
 data_today = yf.Ticker(stock).history(period="1d")
 price = data_today["Close"].iloc[-1]
 
-#Time in days (252 trading days in a year)
-time = 1
+#Time per trading year (252 trading days in a year)
+time = 1/252
 
 #Obtaining values of mean, vol, average logarithmic jump, jump volatility and jump frequency
 mean, vol, k, sig_j, lam = data_scrape(stock,time)
-
-#Converting time to per trading year format
-time = time/252
 
 #C++ function which is imported
 expected_price = mcs.run_simulation(price, mean, vol, lam, k, sig_j, time)
