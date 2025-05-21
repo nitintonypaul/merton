@@ -8,7 +8,7 @@ I will give a quick overview for the normal GBM variables and a detailed explain
 
 ---
 
-### Limitations of the Classic GBM Model
+## Limitations of the Classic GBM Model
 
 The classic Geometric Brownian Motion (GBM) is of the form:
 
@@ -36,7 +36,7 @@ Where:
 
 ---
 
-### What is the Merton Jump Diffusion Model?
+## What is the Merton Jump Diffusion Model?
 
 The **Merton Jump Diffusion Model (JDM)** is an enhancement of the GBM that incorporates **random jumps** in asset prices, aiming to simulate sudden events like earnings surprises, policy changes, or crashes.
 
@@ -55,7 +55,7 @@ Where all original GBM variables apply, and the jump-related terms are:
 
 ---
 
-### Mathematical Explanation
+# Mathematical Explanation
 
 Let’s break down the new jump-related variables:
 
@@ -119,7 +119,7 @@ Together, these additions allow the model to simulate rare but impactful market 
 
 ---
 
-### PSEUDOCODE
+## PSEUDOCODE
 
 ```py
 IMPORT dependencies (yfinance, numpy, math, mcs_simulator)
@@ -190,13 +190,74 @@ DISPLAY expected_price
 
 ---
 
-### Disclaimer
+## Disclaimer
 
 This Merton model implementation has an estimated accuracy above 50%, but it is not intended for making critical financial decisions. All simulations and predictions are for educational or illustrative purposes only. Any financial decisions you make based on this model are solely your responsibility. We disclaim any liability for losses or damages resulting from its use.
 
 ---
 
-### Demo
+## Build Instructions
+
+Download the ZIP folder from the repo and extract it to your local machine before proceeding.
+
+### Windows
+
+No build required. The compiled module is already located in the `src` directory.
+
+**To run:**
+```bash
+python src/main.py
+```
+
+
+### macOS and Linux
+
+**Prerequisites:**
+
+- Ensure `Python 3.x` is installed along with a C++ compiler (`GCC` for Linux or `Clang` for macOS), and the `setuptools` and `pybind11` Python packages.
+
+Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install python3-dev python3-pip build-essential
+pip3 install setuptools pybind11
+```
+
+macOS:
+
+```shell
+xcode-select --install
+brew install python
+pip3 install setuptools pybind11
+```
+
+<br>
+
+**Building:**
+
+Run the following from the root directory (where `setup.py` is):
+```bash
+python3 setup.py build_ext --inplace
+```
+
+This will generate a `.so` file in the root folder. Something like this:
+```bash
+mcs_simulator.cpython-311-darwin.so  # macOS
+mcs_simulator.cpython-311-x86_64-linux-gnu.so  # Linux
+```
+
+<br>
+
+**Running:**
+
+Move the `.so` file into `src/` and run:
+```bash
+python3 src/main.py
+```
+
+---
+## Demo
 
 ```shell
 #Test 1: AAPL (Apple Inc.) for 200,000 simulations (Price in USD)
