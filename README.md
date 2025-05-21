@@ -121,15 +121,13 @@ Together, these additions allow the model to simulate rare but impactful market 
 
 ### PSEUDOCODE
 
-Comments are given by `#A Hashtag (this is a comment)`
-
-```
-IMPORT dependencies (yfinance, numpy, math)
+```py
+IMPORT dependencies (yfinance, numpy, math, mcs_simulator)
 
 #Function
 DECLARE function data_scrape(stock, time)
 
-  CONVERT stock to ticker object using  yf.Ticker()
+  CONVERT stock to ticker object using yf.Ticker()
   FETCH data from stock.history() for a period of 30 days
   FETCH jump_data from stock.history() for a period of 1 year
 
@@ -167,7 +165,7 @@ DECLARE function data_scrape(stock, time)
   ELSE
     COMPUTE sig_j as np.std(jump_array, ddof=1)
 
-  COMPUTE lambda_ as length(jumps) / (252 / time)
+  COMPUTE lambda_ as length(jumps) / (1 / time)
   RETURN (annual_mean, annual_volatility, k, sig_j, lambda_)
 
 #Obtaining data
@@ -177,30 +175,15 @@ OBTAIN simulations from the user
 FETCH data_today from yf.Ticker(stock).history(period="1d")
 FETCH price from data_today["Close"].iloc[-1]
 
-DECLARE time as 1
+DECLARE time as 1/252
 OBTAIN mean, vol, k, sig_j, lam from data_scrape(stock, time)
 
 #Declaring variables
 DECLARE price_sum = 0
-COMPUTE time = time/252, base_wt = (time)^0.5, first_term = mean - vol^2 - lam*k
+COMPUTE base_wt = (time)^0.5, first_term = mean - vol^2 - lam*k
 
-#Simulation
-FOR i from 0 up to simulations
-  OBTAIN Z from np.random.normal(0,1)
-  COMPUTE Wt = Z * base_wt
-
-  OBTAIN N_t from np.random.poisson(lam*time)
-  DECLARE Ji_sum as 0
-
-  #Nested loop to find Summation of Ji
-  FOR j from 1 up to N_t+1
-    OBTAIN J from np.random.normal(math.log(1+k) - sig_j^2 / 2, sig_j)
-    INCREMENT Ji_sum by J
-
-  COMPUTE simulated_price = price * math.exp ((first_term * time) + (vol * Wt) + Ji_sum)
-  INCREMENT price_sum by simulated_price
-
-COMPUTE expected_price as price_sum / simulations
+#Simulation using C++ module
+COMPUTE expected_price from mcs_simulator.run_simulation(price, mean, vol, lam, k, sig_j, time)
 
 DISPLAY expected_price
 ```
@@ -216,38 +199,35 @@ This Merton model implementation has an estimated accuracy above 50%, but it is 
 ### Demo
 
 ```shell
-#Test 1: AAPL with 10,000 simulations (Price in USD)
+#Test 1: AAPL (Apple Inc.) for 200,000 simulations (Price in USD)
 
 Enter stock name: AAPL
-Enter the number of simulations: 10000
 =========================================================
 Stock chosen: AAPL
-Price of AAPL right now = 211.53500366210938
-Price of AAPL after 1 day is simulated to be = 212.28727411799156
+Price of AAPL right now = 206.86000061035156
+Price of AAPL after 1 day is simulated to be = 208.04017825275457
 =========================================================
 ```
 
 ```shell
-#Test 2: NVDA with 10,000 simulations (Price in USD)
+#Test 2: GME (GameStop Corp) for 200,000 simulations (Price in USD)
 
-Enter stock name: NVDA
-Enter the number of simulations: 10000
+Enter stock name: GME
 =========================================================
-Stock chosen: NVDA
-Price of NVDA right now = 135.11500549316406
-Price of NVDA after 1 day is simulated to be = 136.72044994784767
+Stock chosen: GME
+Price of GME right now = 28.510000228881836
+Price of GME after 1 day is simulated to be = 28.6943765265786
 =========================================================
 ```
 
 ```shell
-#Test 3: RELIANCE (NIFTY) with 10,000 simulations (Price in INR)
+#Test 3: RELIANCE for 200,000 simulations (Price in INR)
 
 Enter stock name: RELIANCE.NS
-Enter the number of simulations: 10000
 =========================================================
 Stock chosen: RELIANCE.NS
-Price of RELIANCE.NS right now = 1456.4000244140625
-Price of RELIANCE.NS after 1 day is simulated to be = 1463.545954604547
+Price of RELIANCE.NS right now = 1430.699951171875
+Price of RELIANCE.NS after 1 day is simulated to be = 1438.926053886467
 =========================================================
 ```
 
