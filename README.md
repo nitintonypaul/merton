@@ -192,7 +192,7 @@ DISPLAY expected_price
 
 ## Disclaimer
 
-This Merton model implementation has an estimated accuracy above 50%, but it is not intended for making critical financial decisions. All simulations and predictions are for educational or illustrative purposes only. Any financial decisions you make based on this model are solely your responsibility. We disclaim any liability for losses or damages resulting from its use.
+This Merton model implementation has an estimated accuracy of 30-40%. It's strictly for educational or illustrative purposes and shouldn't be used for critical financial decisions. Any financial decisions made using this model are your sole responsibility, and we disclaim liability for any resulting losses or damages.
 
 ---
 
