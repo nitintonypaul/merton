@@ -1,295 +1,134 @@
-# Merton Jump Diffusion Model
+# Merton Jump Diffusion Model: Advanced Asset Price Simulation
 
 ---
 
 ## Overview
 
-I will give a quick overview for the normal GBM variables and a detailed explaination of the new variables introduced in this model. If you want a detailed explanation of GBM as such, please check out my "Monte Carlo Share Price Prediction" repository [HERE](https://github.com/nitintonypaul/monte-carlo-spp).
+This project showcases an implementation of the **Merton Jump Diffusion Model (JDM)**, a financial model for commonly used for forecasting equity price paths. Building upon conventional continuous-time models, the Merton JDM uniquely incorporates **random "jumps"** to simulate sudden, significant market movements caused by unexpected events like earnings surprises, policy shifts, or economic shocks.
 
----
-
-## Limitations of the Classic GBM Model
-
-The classic Geometric Brownian Motion (GBM) is of the form:
-
-$$
-S_t = S_0 e^{(\mu - 0.5 \sigma^2)t + \sigma W_t}
-$$
-
-Where:
-
-- $$S_t$$ = Expected future price  
-- $$S_0$$ = Current price  
-- $$e$$ = Euler’s number  
-- $$\mu$$ = Drift (average return)  
-- $$\sigma$$ = Volatility (price fluctuation)  
-- $$t$$ = Time in trading years (e.g., 1 day = 1/252, since there are 252 trading days in a year)  
-- $$W_t$$ = Wiener process, where $$W_t = Z \sqrt{t}$$, and $$Z \sim \mathcal{N}(0, 1)$$<br><br>
-
-**Limitations include:**
-
-- **Constant Volatility and Drift:** Assumes market behavior is stable, which it isn’t.
-- **No Jumps:** Fails to capture sudden shocks/news events.
-- **No Mean Reversion:** Prices can drift infinitely with no tendency to return.
-- **Underestimates Extreme Events:** Doesn’t account for fat tails in return distributions.
-- **Ignores Real Market Microstructure:** No bid-ask spread, liquidity, or trading constraints.
+This documentation provides a clear explanation of the model's core principles, its mathematical formulation, and a high-level overview of its efficient **Python and C++ implementation**.
 
 ---
 
 ## What is the Merton Jump Diffusion Model?
 
-The **Merton Jump Diffusion Model (JDM)** is an enhancement of the GBM that incorporates **random jumps** in asset prices, aiming to simulate sudden events like earnings surprises, policy changes, or crashes.
+The **Merton Jump Diffusion Model (JDM)** enhances traditional continuous stochastic processes by integrating a **jump component** into the asset price dynamics. This allows the model to capture abrupt, discontinuous price changes, which are characteristic of real-world financial markets.
 
-Its formula:
+The JDM formula extends the Geometric Brownian Motion (GBM) equation:
 
-$$
-S_t = S_0 e^{(\mu - 0.5 \sigma^2 - k\lambda)t + \sigma W_t + \sum_{i=1}^{N(t)} J_i}
-$$
+$$S_t = S_0 e^{(\mu - 0.5 \sigma^2 - k\lambda)t + \sigma W_t + \sum_{i=1}^{N(t)} J_i}$$
 
-Where all original GBM variables apply, and the jump-related terms are:
+Here, while the standard GBM variables ($$S_t, S_0, \mu, \sigma, t, W_t$$) retain their definitions, the model introduces crucial jump-related terms:
 
-- $$k$$ = Mean jump size (logarithmic average of all jumps)
-- $$\lambda$$ = Average number of jumps per time period (jump intensity/frequency)
-- $$N(t)$$ = A Poisson process representing how many jumps occur up to time $$t$$
-- $$J_i$$ = The size of the $$i$$-th jump (typically modeled as log-normally distributed)
+* $$k$$: Represents the **mean jump size**, specifically the logarithmic average of all jumps. This term subtly adjusts the overall drift to maintain the model's unbiased nature.
+* $$\lambda$$: Denotes the **average number of jumps per unit of time**, often referred to as jump intensity or frequency.
+* $$N(t)$$: Modeled as a **Poisson process**, this variable dictates the total count of jumps occurring up to time $$t$$.
+* $$J_i$$: Signifies the **size of the $$i$$-th jump**, typically drawn from a log-normal distribution to reflect realistic jump magnitudes.
 
 ---
 
-# Mathematical Explanation
+## Mathematical Explanation of Jump-Related Variables
 
-Let’s break down the new jump-related variables:
+Understanding the mathematical foundation of the jump components is key to appreciating the Merton JDM's power:
 
-- **Jump Intensity ($$\lambda$$)**: Represents how frequently jumps are expected. A $$\lambda$$ of 2 means 2 jumps per day on average (If the time period is taken as 1 day).
+* **Jump Intensity ($$\lambda$$):** This parameter quantifies how frequently significant price jumps are expected. For instance, if the chosen time period is one year and we observe 10 jumps, then $$\lambda$$ would be 10 jumps per year. In our implementation, $$\lambda$$ is derived directly from the observed number of significant jumps within a one-year historical data window.
 
-- **Average Jump Size ($$k$$)**: This is calculated as:
+* **Average Jump Size ($$k$$):** This is the average of the natural logarithm of (1 + proportional jump size). It's calculated to ensure that the jump component doesn't introduce bias into the long-term drift. The formula is:
 
-$$
-k = mean(ln(1 + J))
-$$
+  $$k = \text{mean}(\ln(1 + J))$$
 
-  where $$J$$ is a random variable representing the proportional jump size (In fractions). This value adjusts the drift so the model remains unbiased over time.
+    For example, if a stock had proportional jumps of 47%, -33%, -10%, and 89%, $$k$$ would be the average of $$\ln(1.47), \ln(0.67), \ln(0.90), \ln(1.89)$$ . This careful calculation ensures the model accurately reflects the average impact of discrete events.
 
-  An example: Let's take the jump percentage of a stock $$X$$ to be 47%, -33%, -10% and 89% in a given time frame. We can compute the **Average Jump Size ($$k$$)** by
+* **Jump Process ($$N(t)$$):** The number of jumps over time $$t$$ is determined by a **Poisson-distributed** random variable, expressed as $$N(t) \sim \mathcal{P}(\lambda t)$$. This probabilistic approach accurately reflects the unpredictable nature and infrequent occurrence of market jumps.
 
-$$
-k = \frac{ln(1+0.47) + ln(1-0.33) + ln(1-0.1) + ln(1+0.89)}{4}
-$$
+* **Jump Magnitude ($$J_i$$):** Each individual jump's size, $$J_i$$, is sampled from a distribution that ensures its logarithmic value follows a normal distribution. Specifically, $$\ln(1+J) \sim \mathcal{N}(\ln(1+k)- \frac{\sigma_j^{2}}{2}, \sigma_j^{2})$$. Here, $$\sigma_j$$ is the **jump volatility**, which represents the standard deviation of these logarithmic jump sizes. This accounts for the varying severity of real-world market shocks.
 
-  Where $$4$$ is the number of jumps recorded. This gives us a value of 
-
-$$
-k = 0.129000286
-$$
-
-- **Jump Process ($$N(t)$$)**: A **Poisson-distributed** random variable that gives the total number of jumps in time $$t$$. It has a mean  and variance of $$\lambda t$$. It is represented as
-
-$$
-N(t) \sim \mathcal{P}(\lambda t)
-$$
-
-- **Jump Magnitude ($$J_i$$)**: Represents the size of the $$i^{th}$$ jump. Typically drawn from a log-normal distribution. The sum $$\sum_{i=1}^{N(t)} J_i$$ accounts for the total log-return from all jumps up to time $$t$$.
-
-$$J_i$$ or $$J$$ is computed by
-
-$$
-J \sim \mathcal{N}(ln(1+k)- \frac{\sigma_j^{2}}{2}, \sigma_j^{2})
-$$
-
-Where $$\sigma_j$$ is the **jump volatility**, which represents the standard deviation of log jump sizes. For example, if we consider the set of jumps of a stock $$Y$$ as 15%, 30%, 10% and 25%, the average jump percentage becomes
-
-$$
-\frac{15+30+10+25}{4} = 20
-$$
-
-So, $$\sigma_j$$ can be computed by
-
-$$
-\sigma_j = \sqrt{\frac{(20-15)^2 + (20-30)^2 + (20-25)^2 + (20-10)^2}{4}}
-$$
-
-OR
-
-$$
-\sigma_j = 7.906
-$$
-
-Which is the **standard deviation** of the set of jumps of the stock $$Y$$.<br><br><br>
-
-Together, these additions allow the model to simulate rare but impactful market movements while still preserving the standard GBM structure.
+These integrated components allow the Merton JDM to simulate both continuous market fluctuations and discrete, impactful events, providing a more comprehensive and realistic financial forecasting tool.
 
 ---
 
-## PSEUDOCODE
+## Implementation Overview
 
-```py
-IMPORT dependencies (yfinance, numpy, math, mcs_simulator)
+This Merton Jump Diffusion Model is engineered with a **hybrid architecture**, leveraging **Python** for its robust data handling and visualization capabilities, and **C++** for the computationally intensive Monte Carlo simulations. This design ensures both ease of use and high performance.
 
-#Function
-DECLARE function data_scrape(stock, time)
+### Python (Orchestrator)
 
-  CONVERT stock to ticker object using yf.Ticker()
-  FETCH data from stock.history() for a period of 30 days
-  FETCH jump_data from stock.history() for a period of 1 year
+The Python component acts as the main orchestrator. It handles the initial data acquisition for a given stock using libraries like `yfinance`. Crucially, it calculates all necessary model parameters from historical data: the annualized mean return, volatility, average jump size ($$k$$), jump volatility ($$\sigma_j$$), and jump intensity ($$\lambda$$). It then interfaces with the C++ backend to generate price paths and finally processes and visualizes the simulation results using `matplotlib` and `numpy`.
 
-  #Obtaining prices when the market closes each day
-  FETCH prices from data["Close"]
-  FETCH jump_prices from jump_data["Close"]
+* **Data Scraper:** Identifies and quantifies historical jumps by flagging daily percentage changes that exceed a certain threshold (e.g., 3 standard deviations of returns over a one-year period). This mechanism is key to extracting real-world jump data.
+* **Parameter Calculation:** Computes the statistical inputs required by the Merton JDM, ensuring the model is calibrated with real market dynamics. For instance, the **jump intensity ($$\lambda$$)** is derived from the count of identified jumps over the historical period.
 
-  #Computing returns
-  COMPUTE returns as np.log(prices / prices.shift(1)).dropna()
-  COMPUTE jump_returns as jump_prices.pct_change().dropna()
+### C++ (High-Performance Simulation Engine)
 
-  #Computing mean and volatility
-  COMPUTE mean as returns.mean() and volatility as returns.std()
-  COMPUTE annual_mean as mean * 252 and annual_volatility as volatility * np.sqrt(252)
+The core logic for generating the Merton Jump Diffusion price paths resides in the C++ component, compiled as a Python module using `pybind11`. This is where the model's heavy lifting occurs, executing numerous Monte Carlo simulations efficiently.
 
-  #Defining threshold
-  COMPUTE threshold as 3 * jump_returns.std()
-  COMPUTE jumps as jump_returns[abs(jump_returns) > threshold].tolist()
+* **Price Path Generation:** The C++ module's `price_path` function generates a series of price points for a single simulation path. This function iteratively applies the Merton JDM formula, incorporating random samples from standard normal, log-normal, and Poisson distributions for the Wiener process, jump magnitudes, and jump counts, respectively.
+* **Performance Optimization:** By offloading the Monte Carlo loop to C++, the simulation benefits from native code execution speed, allowing for thousands or even millions of price paths to be generated rapidly, which is critical for accurate statistical analysis of potential future prices.
 
-  #Computing k
-  DECLARE ksum as 0
-  FOR each i in jumps
-    INCREMENT ksum by math.log(1+i)
-  IF length(jumps) is 0
-    DECLARE k as 0
-  ELSE
-    DECLARE k as ksum / length(jumps)
-
-  #Computing jump volatility
-  DECLARE jump_array as empty array
-  FOR each i in jumps
-    APPEND math.log(1+i) to jump_array
-  IF length(jump_array) is 0
-    DECLARE sig_j as 0
-  ELSE
-    COMPUTE sig_j as np.std(jump_array, ddof=1)
-
-  COMPUTE lambda_ as length(jumps) / (1 / time)
-  RETURN (annual_mean, annual_volatility, k, sig_j, lambda_)
-
-#Obtaining data
-OBTAIN stock from the user
-OBTAIN simulations from the user
-
-FETCH data_today from yf.Ticker(stock).history(period="1d")
-FETCH price from data_today["Close"].iloc[-1]
-
-DECLARE time as 1/252
-OBTAIN mean, vol, k, sig_j, lam from data_scrape(stock, time)
-
-#Declaring variables
-DECLARE price_sum = 0
-COMPUTE base_wt = (time)^0.5, first_term = mean - vol^2 - lam*k
-
-#Simulation using C++ module
-COMPUTE expected_price from mcs_simulator.run_simulation(price, mean, vol, lam, k, sig_j, time)
-
-DISPLAY expected_price
-```
+This integrated approach combines the flexibility of Python with the raw computational power of C++, resulting in a robust and efficient financial modeling tool.
 
 ---
 
-## Disclaimer
+## Demos
 
-This Merton model implementation has an estimated accuracy of 30-40%. It's strictly for educational or illustrative purposes and shouldn't be used for critical financial decisions. Any financial decisions made using this model are your sole responsibility, and we disclaim liability for any resulting losses or damages.
+Here are examples of the model in action, simulating future prices for various stocks:
 
----
+### Test 1: Berkshire Hathaway Inc. (Class B)
 
-## Build Instructions
+```
+# BRK-B (Low Volatility)
 
-Download the ZIP folder from the repo and extract it to your local machine before proceeding.
-
-### Windows
-
-No build required. The compiled module is already located in the `src` directory.
-
-**To run:**
-```bash
-python src/main.py
+Enter stock name: BRK-B
+Enter number of paths: 30
+==============================================
+RESULTS (MAY VARY EACH RUN)
+Stock chosen for analysis: BRK-B
+Current Price = 484.85
+Median Expected Price (1 day) = 483.06
+Average Expected Price (1 day) = 483.71
+Chances of Price Increase = 33.33%
+==============================================
 ```
 
+![BRK](assets/BRK-B_30.png)
 
-### macOS and Linux
 
-**Prerequisites:**
+### Test 2: Apple Inc.
 
-- Ensure `Python 3.x` is installed along with a C++ compiler (`GCC` for Linux or `Clang` for macOS), and the `setuptools` and `pybind11` Python packages.
-
-Ubuntu/Debian:
-
-```bash
-sudo apt update
-sudo apt install python3-dev python3-pip build-essential
-pip3 install setuptools pybind11
 ```
-
-macOS:
-
-```shell
-xcode-select --install
-brew install python
-pip3 install setuptools pybind11
-```
-
-<br>
-
-**Building:**
-
-Run the following from the root directory (where `setup.py` is):
-```bash
-python3 setup.py build_ext --inplace
-```
-
-This will generate a `.so` file in the root folder. Something like this:
-```bash
-mcs_simulator.cpython-311-darwin.so  # macOS
-mcs_simulator.cpython-311-x86_64-linux-gnu.so  # Linux
-```
-
-<br>
-
-**Running:**
-
-Move the `.so` file into `src/` and run:
-```bash
-python3 src/main.py
-```
-
----
-## Demo
-
-```shell
-#Test 1: AAPL (Apple Inc.) for 200,000 simulations (Price in USD)
+# AAPL (Moderate Volatility)
 
 Enter stock name: AAPL
-=========================================================
-Stock chosen: AAPL
-Price of AAPL right now = 206.86000061035156
-Price of AAPL after 1 day is simulated to be = 208.04017825275457
-=========================================================
+Enter number of paths: 30
+==============================================
+RESULTS (MAY VARY EACH RUN)
+Stock chosen for analysis: AAPL
+Current Price = 201.00
+Median Expected Price (1 day) = 200.09
+Average Expected Price (1 day) = 201.38
+Chances of Price Increase = 43.33%
+==============================================
 ```
 
-```shell
-#Test 2: GME (GameStop Corp) for 200,000 simulations (Price in USD)
+![AAPL](assets/AAPL_30.png)
 
-Enter stock name: GME
-=========================================================
-Stock chosen: GME
-Price of GME right now = 28.510000228881836
-Price of GME after 1 day is simulated to be = 28.6943765265786
-=========================================================
+
+### Test 3: Tesla Inc.
+
+```
+# TSLA (High Volatility)
+
+Enter stock name: TSLA
+Enter number of paths: 30
+==============================================
+RESULTS (MAY VARY EACH RUN)
+Stock chosen for analysis: TSLA
+Current Price = 322.16
+Median Expected Price (1 day) = 325.82
+Average Expected Price (1 day) = 327.44
+Chances of Price Increase = 63.33%
+==============================================
 ```
 
-```shell
-#Test 3: RELIANCE for 200,000 simulations (Price in INR)
+![TSLA](assets/TSLA_30.png)
 
-Enter stock name: RELIANCE.NS
-=========================================================
-Stock chosen: RELIANCE.NS
-Price of RELIANCE.NS right now = 1430.699951171875
-Price of RELIANCE.NS after 1 day is simulated to be = 1438.926053886467
-=========================================================
-```
-
----
