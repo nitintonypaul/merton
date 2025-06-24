@@ -83,12 +83,12 @@ Enter number of paths: 100
 ==============================================
 RESULTS (MAY VARY EACH RUN)
 Stock chosen for analysis: BRK-B
-Current Price = 487.77
-Median Expected Price (1 day) = 487.54
-Average Expected Price (1 day) = 487.63
-Highest Simulated Price = 491.86
-Lowest Simulated Price = 484.74
-Chances of Price Increase = 43.00%
+Current Price = 495.63
+Median Expected Price (1 day) = 495.63
+Average Expected Price (1 day) = 495.64
+Highest Simulated Price = 496.25
+Lowest Simulated Price = 495.07
+Chances of Price Increase = 50.00%
 ==============================================
 ```
 
@@ -105,12 +105,12 @@ Enter number of paths: 100
 ==============================================
 RESULTS (MAY VARY EACH RUN)
 Stock chosen for analysis: AAPL
-Current Price = 201.50
-Median Expected Price (1 day) = 201.50
-Average Expected Price (1 day) = 201.49
-Highest Simulated Price = 205.71
-Lowest Simulated Price = 198.61
-Chances of Price Increase = 50.00%
+Current Price = 202.14
+Median Expected Price (1 day) = 202.11
+Average Expected Price (1 day) = 202.13
+Highest Simulated Price = 202.52
+Lowest Simulated Price = 201.80
+Chances of Price Increase = 47.00%
 ==============================================
 ```
 
@@ -127,12 +127,12 @@ Enter number of paths: 100
 ==============================================
 RESULTS (MAY VARY EACH RUN)
 Stock chosen for analysis: TSLA
-Current Price = 348.68
-Median Expected Price (1 day) = 348.36
-Average Expected Price (1 day) = 348.61
-Highest Simulated Price = 364.55
-Lowest Simulated Price = 329.71
-Chances of Price Increase = 49.00%
+Current Price = 342.10
+Median Expected Price (1 day) = 342.05
+Average Expected Price (1 day) = 342.00
+Highest Simulated Price = 344.38
+Lowest Simulated Price = 339.16
+Chances of Price Increase = 47.00%
 ==============================================
 ```
 

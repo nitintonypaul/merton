@@ -14,10 +14,10 @@ std::vector<double> price_path (double price, double mean, double vol, double la
 double estimate(double price, double mean, double vol, double lam, double k, double sig_j, double time, std::mt19937 &gen);
 
 // Price path function
-// Obtains price path with 100 data points
+// Obtains price path with 100 data points (Including the initial price)
 std::vector<double> price_path (double price, double mean, double vol, double lam, double k, double sig_j, double time) {
 
-    // Declaring price path array
+    // Declaring price path array and initializing first value to current price
     std::vector<double> prices(100);
     prices[0] = price;
 
@@ -26,15 +26,19 @@ std::vector<double> price_path (double price, double mean, double vol, double la
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    // Precomputing dt to increase computational efficiency
-    double dt = time/101;
+    // Precomputing dt and initializing previousPRICE variable
+    double dt = time/100;
     double previousPRICE = price;
 
-    // Monte Carlo Simulation to find the price path of the given stock
-    for (int i = 1; i <= 100; i++) {
-        previousPRICE = estimate (previousPRICE, mean, vol, lam, k, sig_j, dt*i, gen);
+    // Finding the price path of the stock
+    // Compounds from previousPRICE essentially making it recursive
+    for (int i = 1; i <= 99; i++) {
+        previousPRICE = estimate (previousPRICE, mean, vol, lam, k, sig_j, dt, gen);
         prices[i] = previousPRICE;
     }
+
+    // Debugging code
+    // std::cout << prices.size() << std::endl;
 
     // Returning the list to python to plot on graph and further analysis
     return prices;
@@ -43,13 +47,10 @@ std::vector<double> price_path (double price, double mean, double vol, double la
 //Merton Jump Diffusion expected price estimation function
 double estimate (double price, double mean, double vol, double lam, double k, double sig_j, double time, std::mt19937 &gen) {
 
-    // This was the critical mistake. "first_term" was used instead of "mean" in MJD EQUATION
-    // double first_term = mean - (std::pow(vol, 2)) - (lam*k);
-
     // J distribution variables
     double J_mean = std::log(1+k)-(std::pow(sig_j, 2)/ (double)2);
 
-    // Distributions
+    // Initializing distributions for Brownian noise and Jump component
     // Assigning functions for the respective distributions to be used in MJD
     std::normal_distribution<double> wiener_dist(0.0, 1.0);
     std::normal_distribution<double> J_dist(J_mean, sig_j);
@@ -72,7 +73,11 @@ double estimate (double price, double mean, double vol, double lam, double k, do
 
     // MJD EQUATION
     // Computing and returning expected price using MJD equation
+    // MJD EQUATION roughly is price * exp ( mean.time + BROWNIAN NOISE + JUMP COMPONENT)
     double expected_price = price * std::exp( (mean * time) + (vol * Wt) + Ji_sum);
+
+    // Why do I even use expected_price variable when I can return it directly?
+    // I guess we'll never know
     return expected_price;
 }
 
