@@ -28,10 +28,6 @@ def data_scrape(stock, time):
     mean = returns.mean()
     volatility = returns.std()
 
-    # Convert into annual values
-    annual_mean = mean * 252
-    annual_volatility = volatility * np.sqrt(252)
-
     # Computing Threshold for obtaining jumps
     threshold = 3 * jump_returns.std()
 
@@ -65,7 +61,7 @@ def data_scrape(stock, time):
     lambda_ = len(jumps)/(1/time)
 
     # Returning obtained values
-    return (annual_mean, annual_volatility, k, sig_j, lambda_)
+    return (mean, volatility, k, sig_j, lambda_)
 
 # Obtaining stock (Ticker Symbol) and number of price paths from the user
 stock = input("Enter stock name: ")
@@ -94,6 +90,9 @@ for i in range(paths):
     terminals.append(priceArray[-1])
     plt.plot(TIMES, priceArray, alpha=0.9, linewidth=1)
 
+# Sorting terminals
+terminals.sort()
+
 # Displaying results
 print("==============================================")
 print("RESULTS (MAY VARY EACH RUN)")
@@ -101,6 +100,8 @@ print(f"Stock chosen for analysis: {stock}")
 print(f"Current Price = {price:.2f}")
 print(f"Median Expected Price (1 day) = {np.median(terminals):.2f}")
 print(f"Average Expected Price (1 day) = {np.mean(terminals):.2f}")
+print(f"Highest Simulated Price = {terminals[-1]:.2f}")
+print(f"Lowest Simulated Price = {terminals[0]:.2f}")
 print(f"Chances of Price Increase = {(len([x for x in terminals if x > price])/len(terminals))*100:.2f}%")
 print("==============================================")
 

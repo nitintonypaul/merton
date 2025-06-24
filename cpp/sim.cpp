@@ -28,10 +28,12 @@ std::vector<double> price_path (double price, double mean, double vol, double la
 
     // Precomputing dt to increase computational efficiency
     double dt = time/101;
+    double previousPRICE = price;
 
     // Monte Carlo Simulation to find the price path of the given stock
     for (int i = 1; i <= 100; i++) {
-        prices[i] = estimate (price, mean, vol, lam, k, sig_j, dt*i, gen);
+        previousPRICE = estimate (previousPRICE, mean, vol, lam, k, sig_j, dt*i, gen);
+        prices[i] = previousPRICE;
     }
 
     // Returning the list to python to plot on graph and further analysis
