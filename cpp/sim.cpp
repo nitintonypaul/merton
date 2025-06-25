@@ -10,15 +10,15 @@
 namespace py = pybind11;
 
 // Defining functions
-std::vector<double> price_path (double price, double mean, double vol, double lam, double k, double sig_j, double time);
+std::vector<double> price_path (double price, double mean, double vol, double lam, double k, double sig_j, double time, int plots=100);
 double estimate(double price, double mean, double vol, double lam, double k, double sig_j, double time, std::mt19937 &gen);
 
 // Price path function
 // Obtains price path with 100 data points (Including the initial price)
-std::vector<double> price_path (double price, double mean, double vol, double lam, double k, double sig_j, double time) {
+std::vector<double> price_path (double price, double mean, double vol, double lam, double k, double sig_j, double time, int plots) {
 
     // Declaring price path array and initializing first value to current price
-    std::vector<double> prices(100);
+    std::vector<double> prices(plots);
     prices[0] = price;
 
     // Random number engine
@@ -27,12 +27,12 @@ std::vector<double> price_path (double price, double mean, double vol, double la
     std::mt19937 gen(rd());
 
     // Precomputing dt and initializing previousPRICE variable
-    double dt = time/100;
+    double dt = time/plots;
     double previousPRICE = price;
 
     // Finding the price path of the stock
     // Compounds from previousPRICE essentially making it recursive
-    for (int i = 1; i <= 99; i++) {
+    for (int i = 1; i <= (plots-1); i++) {
         previousPRICE = estimate (previousPRICE, mean, vol, lam, k, sig_j, dt, gen);
         prices[i] = previousPRICE;
     }
@@ -66,7 +66,7 @@ double estimate (double price, double mean, double vol, double lam, double k, do
 
     // Computing J_i sum
     double Ji_sum = 0.000;
-    for (int j = 1; j<= N_t; j++) {
+    for (int j = 1; j <= N_t; j++) {
         double J = J_dist(gen);
         Ji_sum += J;
     }

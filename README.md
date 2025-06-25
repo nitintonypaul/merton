@@ -79,16 +79,16 @@ Here are examples of the model in action, simulating future prices for various s
 # BRK-B (Low Volatility)
 
 Enter stock name: BRK-B
-Enter number of paths: 100
+Enter number of price paths: 100
 ==============================================
-RESULTS (MAY VARY EACH RUN)
+STOCHASTIC SIMULATION - RESULTS MAY VARY
 Stock chosen for analysis: BRK-B
-Current Price = 495.63
-Median Expected Price (1 day) = 495.63
-Average Expected Price (1 day) = 495.64
-Highest Simulated Price = 496.25
-Lowest Simulated Price = 495.07
-Chances of Price Increase = 50.00%
+Current Price = 493.48
+Median Expected Price (1 day) = 493.47
+Average Expected Price (1 day) = 493.49
+Lowest Simulated Price = 492.89
+Highest Simulated Price = 494.10
+Probability of Price Increase = 49.00%
 ==============================================
 ```
 
@@ -101,16 +101,16 @@ Chances of Price Increase = 50.00%
 # AAPL (Moderate Volatility)
 
 Enter stock name: AAPL
-Enter number of paths: 100
+Enter number of price paths: 100
 ==============================================
-RESULTS (MAY VARY EACH RUN)
+STOCHASTIC SIMULATION - RESULTS MAY VARY
 Stock chosen for analysis: AAPL
-Current Price = 202.14
-Median Expected Price (1 day) = 202.11
-Average Expected Price (1 day) = 202.13
-Highest Simulated Price = 202.52
-Lowest Simulated Price = 201.80
-Chances of Price Increase = 47.00%
+Current Price = 200.30
+Median Expected Price (1 day) = 200.30
+Average Expected Price (1 day) = 200.30
+Lowest Simulated Price = 199.86
+Highest Simulated Price = 200.68
+Probability of Price Increase = 51.00%
 ==============================================
 ```
 
@@ -123,16 +123,16 @@ Chances of Price Increase = 47.00%
 # TSLA (High Volatility)
 
 Enter stock name: TSLA
-Enter number of paths: 100
+Enter number of price paths: 100
 ==============================================
-RESULTS (MAY VARY EACH RUN)
+STOCHASTIC SIMULATION - RESULTS MAY VARY
 Stock chosen for analysis: TSLA
-Current Price = 342.10
-Median Expected Price (1 day) = 342.05
-Average Expected Price (1 day) = 342.00
-Highest Simulated Price = 344.38
-Lowest Simulated Price = 339.16
-Chances of Price Increase = 47.00%
+Current Price = 340.47
+Median Expected Price (1 day) = 340.62
+Average Expected Price (1 day) = 340.54
+Lowest Simulated Price = 337.91
+Highest Simulated Price = 343.15
+Probability of Price Increase = 54.00%
 ==============================================
 ```
 
