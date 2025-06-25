@@ -3,7 +3,7 @@ import pybind11
 
 ext_modules = [
     Extension(
-        "merton",
+        "tools.merton",
         ["cpp/sim.cpp"],
         include_dirs=[pybind11.get_include()],
         language="c++"

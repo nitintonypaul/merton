@@ -69,6 +69,88 @@ This integrated approach combines the flexibility of Python with the raw computa
 
 ---
 
+## Build Instructions
+These instructions will guide you through setting up and running the program.
+
+### Prerequisites
+Before you begin, ensure you have the following installed:
+
+- `Python 3.x` (e.g., Python 3.8 or newer)
+- `pip` (Python package installer, usually comes with Python)
+- `git` (to clone the repository, or you can download the ZIP file like a boss)
+
+### Setup and Build
+Follow these steps to set up the environment, build the necessary extensions, and run the program:
+
+#### 1. Clone the Repository or Download ZIP file
+If you haven't cloned the repository yet, use the following command:
+
+```bash
+git clone https://github.com/nitintonypaul/merton.git
+cd your-repository-name    # Navigate into your project directory
+```
+
+Want to skip using git? You can download the zip file by clicking on `Code` then `Download ZIP`.
+#### 2. Create a Virtual Environment
+It's highly recommended to create a virtual environment to manage project dependencies separately.
+But if you don't care, you can skip steps 2 and 3.
+
+```bash
+python3 -m venv venv
+```
+
+#### 3. Activate the Virtual Environment
+On Linux/macOS:
+
+```bash
+source venv/bin/activate
+```
+
+#### 4. Install Dependencies
+Install all required packages from the requirements.txt file:
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 5. Build Extensions (Only for macOS and Linux)
+Build the C++ extension using `setup.py`. This command will place the built files into the src directory. This step is only required for macOS and Linux systems. Windows users have the module prebuilt in `src/tools`.
+
+```bash
+python setup.py build_ext --build-lib src
+```
+
+#### 6. Navigate to the Source Directory
+Change your current directory to the src folder where your main script and built modules reside:
+
+```bash
+cd src
+```
+
+#### 7. Run the Program
+Finally, execute the main program and see the graphs dancing:
+
+```bash
+python main.py
+```
+
+### Sample Input
+When you run the program, it might prompt you for input similar to the following:
+
+```babsh
+Enter stock name: TSLA    # Your favorite stock (use STOCK_NAME.NS for NSE stocks)
+Enter number of price paths: 100    # Keep it under 500 to NOT vaporize your computer
+```
+
+### Troubleshooting
+If you encounter command not found for python3, try python depending on your system's configuration.
+
+Ensure all prerequisites are met.
+
+If `setup.py` fails, check the output for missing compilers (like `gcc`) or development headers.
+
+---
+
 ## Demos
 
 Here are examples of the model in action, simulating future prices for various stocks:
