@@ -166,11 +166,11 @@ Enter number of price paths: 100
 STOCHASTIC SIMULATION - RESULTS MAY VARY
 Stock chosen for analysis: BRK-B
 Current Price = 493.48
-Median Expected Price (1 day) = 493.47
-Average Expected Price (1 day) = 493.49
-Lowest Simulated Price = 492.89
-Highest Simulated Price = 494.10
-Probability of Price Increase = 49.00%
+Median Expected Price (1 day) = 492.47
+Average Expected Price (1 day) = 492.58
+Lowest Simulated Price = 483.51
+Highest Simulated Price = 504.05
+Probability of Price Increase = 43.00%
 ==============================================
 ```
 
@@ -188,11 +188,11 @@ Enter number of price paths: 100
 STOCHASTIC SIMULATION - RESULTS MAY VARY
 Stock chosen for analysis: AAPL
 Current Price = 200.30
-Median Expected Price (1 day) = 200.30
-Average Expected Price (1 day) = 200.30
-Lowest Simulated Price = 199.86
-Highest Simulated Price = 200.68
-Probability of Price Increase = 51.00%
+Median Expected Price (1 day) = 199.61
+Average Expected Price (1 day) = 199.76
+Lowest Simulated Price = 193.47
+Highest Simulated Price = 206.16
+Probability of Price Increase = 42.00%
 ==============================================
 ```
 
@@ -210,11 +210,11 @@ Enter number of price paths: 100
 STOCHASTIC SIMULATION - RESULTS MAY VARY
 Stock chosen for analysis: TSLA
 Current Price = 340.47
-Median Expected Price (1 day) = 340.62
-Average Expected Price (1 day) = 340.54
-Lowest Simulated Price = 337.91
-Highest Simulated Price = 343.15
-Probability of Price Increase = 54.00%
+Median Expected Price (1 day) = 341.42
+Average Expected Price (1 day) = 342.20
+Lowest Simulated Price = 305.92
+Highest Simulated Price = 394.97
+Probability of Price Increase = 52.00%
 ==============================================
 ```
 

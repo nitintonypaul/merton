@@ -29,9 +29,9 @@ def data_scrape(stock, time, backtest=False):
     mean = returns.mean()
     volatility = returns.std()
 
-    # Scaling to daily mean if it's not daily
-    mean /= (time * 252)
-    volatility /= (time * 252) ** 0.5
+    # Annualizing mean and volatility
+    mean *= (252)
+    volatility *= (252) ** 0.5
 
     # Computing Threshold for obtaining jumps
     threshold = 3 * jump_returns.std()
