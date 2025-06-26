@@ -25,8 +25,8 @@ time = 1/252
 
 # Obtaining necessary values using data_scrape from utils.py
 # backtest is defaulted to false (It doesn't change anything if set to true... yet)
-price, mean, vol, k, sig_j, lam = data_scrape(stock, time, backtest=False)
-
+price, mean, vol, k, sig_j, lam = data_scrape(stock, time)
+print(vol, k, lam, sig_j)
 # Array to store terminal prices
 terminals = []
 

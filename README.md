@@ -134,10 +134,18 @@ Finally, execute the main program and see the graphs dancing:
 python main.py
 ```
 
+If you want to run the backtest instead, you can type in:
+
+```bash
+python test.py
+```
+
+**Note:** the number of simulations (`nsim`) has been set to 5 to cleanly showcase jumps. If you want to change the number of simulations you can do so by opening `test.py` in an editor and changing the function call argument at the bottom.
+
 ### Sample Input
 When you run the program, it might prompt you for input similar to the following:
 
-```babsh
+```bash
 Enter stock name: TSLA    # Your favorite stock (use STOCK_NAME.NS for NSE stocks)
 Enter number of price paths: 100    # Keep it under 500 to NOT vaporize your computer
 ```
@@ -220,3 +228,10 @@ Probability of Price Increase = 52.00%
 
 ![TSLA](assets/TSLA_100.png)
 
+---
+
+## Backtest Demo
+
+A backtesting simulation was done on AAPL for the date 24-06-2025. Here is a sample result:
+
+![backtest](assets/AAPL_backtest.png)

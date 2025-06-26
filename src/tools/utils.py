@@ -5,8 +5,7 @@ import math
 
 # data_scrape function to obtain values from yfinance
 # Necessary values are precomputed
-# backtest variable is given for scalability, incase a backtest is added in the future
-def data_scrape(stock, time, backtest=False):
+def data_scrape(stock, time):
 
     # Conversion into ticker symbol object
     stock = yf.Ticker(stock)
