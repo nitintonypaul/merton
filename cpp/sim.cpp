@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <cmath>
+#include <vector>
 
 //pybind11 to build into python module
 #include <pybind11/pybind11.h>
