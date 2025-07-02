@@ -21,7 +21,7 @@ if paths > 100:
         sys.exit(0)
 
 # Time per trading year (252 trading days in a year)
-time = 252/252
+time = 1/252
 
 # Obtaining necessary values using data_scrape from utils.py
 # backtest is defaulted to false (It doesn't change anything if set to true... yet)
