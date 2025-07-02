@@ -21,12 +21,12 @@ if paths > 100:
         sys.exit(0)
 
 # Time per trading year (252 trading days in a year)
-time = 1/252
+time = 252/252
 
 # Obtaining necessary values using data_scrape from utils.py
 # backtest is defaulted to false (It doesn't change anything if set to true... yet)
 price, mean, vol, k, sig_j, lam = data_scrape(stock, time)
-print(vol, k, lam, sig_j)
+
 # Array to store terminal prices
 terminals = []
 
